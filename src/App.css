@@ -3,17 +3,21 @@
 }
 
 .App-logo {
-  height: 100px;
+  width: 100px;
 }
 
 .App-header {
-  background-color: #ffa6a6;
+  background-color: #f1f1f1;
   height: 100px;
   color: white;
 }
 
 .flex {
   display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
 }
 
 .flex-align-content-start {
@@ -58,4 +62,12 @@
 
 .App-title {
   font-size: 9.5em;
+}
+
+.pad-30 {
+  padding: 30px;
+}
+
+.margin-10-l {
+  margin-left: 10px;
 }

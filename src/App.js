@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import sarah from './sarah_snow_mountain.jpeg';
+import { Router, Route, Switch } from 'react-router';
 import './App.css';
-          // <img src={sarah} className="App-logo" alt="logo" />
+import {  Menu } from  './Menu';
+
 
 class App extends Component {
   constructor(props) {
@@ -28,12 +29,15 @@ class App extends Component {
 
     return (
       <div className="App">
-        <header className="App-header flex flex-align-items-center flex-justify-content-space-between ">
+        <header
+          className={`App-header flex flex-align-items-center
+          flex-justify-content-space-between`}
+        >
           <h1 className="App-title">
-            {this.state.width > 415 ? 'sarah' :'s' }
+            {this.state.width > 415 ? 'sarah' :'s.e' }
           </h1>
-          <img src={sarah} className="App-logo" alt="logo" />
         </header>
+        <Menu />
       </div>
     );
   }
