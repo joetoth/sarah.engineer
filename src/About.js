@@ -10,8 +10,8 @@ const About = () => (
     <h4>Connect with Me:</h4>
     <div>
       <a href="https://github.com/sarahedkins">Github</a>
-      <a className="margin-5-l" href="https://www.linkedin.com/in/sarahedkins/">LinkedIn</a>
-      <a className="margin-5-l" href="https://medium.com/@edkins.sarah">Medium</a>
+      <a className="margin-10-l" href="https://www.linkedin.com/in/sarahedkins/">LinkedIn</a>
+      <a className="margin-10-l" href="https://medium.com/@edkins.sarah">Medium</a>
     </div>
   </div>
 )

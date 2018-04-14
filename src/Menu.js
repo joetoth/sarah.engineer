@@ -10,7 +10,7 @@ import {
 export const Menu = () => (
   <Router>
     <div>
-      <div className="flex">
+      <div className="flex pad-30">
         <Link className="margin-10-l" to="/">Home</Link>
         <Link className="margin-10-l" to="/about">About</Link>
       </div>
