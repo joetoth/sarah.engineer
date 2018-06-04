@@ -1,11 +1,10 @@
 import React from 'react';
 import sarah from './sarah_snow_mountain.jpeg';
-import { Link } from 'react-router-dom';
 
 const About = () => (
   <div className="flex flex-column flex-align-items-center pad-30">
     <h2>About Sarah</h2>
-    <img src={sarah} className="App-logo" alt="logo" />
+    <img src={sarah} className="App-logo img-round" alt="logo" />
 
     <h4>Connect with Me:</h4>
     <div>

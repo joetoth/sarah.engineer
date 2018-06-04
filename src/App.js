@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Router, Route, Switch } from 'react-router';
 import './App.css';
 import {  Menu } from  './Menu';
 
@@ -25,8 +24,6 @@ class App extends Component {
   }
 
   render() {
-    const width = window.innerWidth;
-
     return (
       <div className="App">
         <header
