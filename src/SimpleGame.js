@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
 
+/*
+  TODO
+  - make obstacles and ground move in unison
+  - add JUMP ability of drawWorm
+  - scoring
+  - make worm "eat" leafs to gain health/points/speed?
+*/
+
 class SimpleGame extends Component {
   constructor(props) {
     super(props);
@@ -14,6 +22,7 @@ class SimpleGame extends Component {
   componentDidMount() {
     this.initGame();
     this.drawWorm();
+    this.drawGround();
     window.addEventListener('resize', this.resizeCanvas);
   }
 
@@ -55,7 +64,7 @@ class SimpleGame extends Component {
 
   // dot
   drawWormPath = (ctx, x, y) => {
-    ctx.clearRect(0, 0, 15, 15);
+    // ctx.clearRect(0, 0, 15, 15);
     ctx.beginPath();
     ctx.arc(x, y, 10, 0, Math.PI*2);
     ctx.fillStyle = "#0095DD";
@@ -73,6 +82,50 @@ class SimpleGame extends Component {
     ctx.lineTo(60, 30);
     ctx.stroke();
     ctx.closePath();
+  }
+
+  drawGround() {
+    let x = 50;
+    let y = 62;
+    let dx = 2;
+    let dy = 0;
+    let start = 0;
+    const ctx = this.canvasRef.current.getContext('2d');
+    const update = () => {
+      x = x + dx;
+      y = y + dy;
+      this.drawGroundPath(ctx, x, y);
+      if (start < this.state.width) {
+        start++;
+        setTimeout(() => update(), 10);
+      }
+    }
+    update();
+  }
+
+  drawGroundPath(ctx, x, y) {
+    ctx.beginPath();
+    ctx.arc(x, y, 1, 0, Math.PI*2);
+    ctx.fillStyle = "#000000";
+    ctx.fill();
+    ctx.closePath();
+
+    const randomNumber = Math.floor(Math.random() * 100);
+    if (randomNumber % 10 === 0) {  // adds dirt to ground
+      const randomDotDistance = Math.floor(Math.random() * 10);
+      ctx.beginPath();
+      ctx.arc(x, y+randomDotDistance, 1, 0, Math.PI*2);
+      ctx.fillStyle = "#000000";
+      ctx.fill();
+      ctx.closePath();
+    } else if (randomNumber % 5 === 0) { // adds leafs on ground
+      const randomHeight = Math.floor(Math.random() * 10);
+      ctx.beginPath();
+      ctx.arc(x, y-randomHeight, 3, 0, Math.PI*2);
+      ctx.fillStyle = "#2eb82e";
+      ctx.fill();
+      ctx.closePath();
+    }
   }
 
   render() {
