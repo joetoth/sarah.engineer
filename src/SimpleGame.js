@@ -16,6 +16,12 @@ class SimpleGame extends Component {
       diff: 50,
       width: window.innerWidth - 50,
       height: window.innerHeight - 50,
+      wormColor: 0,
+      colors: ['#0095DD', '#ff9966', '#ccccff', '#ffccff'],
+      wormX: 50,
+      wormY: 50,
+      wormWidth: 20,
+      wormHeight: 10,
     };
   }
 
@@ -24,10 +30,12 @@ class SimpleGame extends Component {
     this.drawWorm();
     this.drawGround();
     window.addEventListener('resize', this.resizeCanvas);
+    window.addEventListener('keydown', this.keyDownHandler);
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.resizeCanvas);
+    window.addEventListener('keydown', this.keyDownHandler);
   }
 
   resizeCanvas = () => {
@@ -37,6 +45,19 @@ class SimpleGame extends Component {
     })
   }
 
+  keyDownHandler = (e) => {
+    if (e.keyCode == 67) {
+        this.setState({
+          wormColor: (this.state.wormColor + 1) % this.state.colors.length,
+        }, this.drawWorm)
+    } else if (e.keyCode == 32 || e.keyCode == 13 || e.keyCode == 38 ) {
+      console.log("jump worm!");
+      this.setState({
+        wormY: 10,
+      }, this.drawWorm);
+    }
+  }
+
   initGame() {
     const ctx = this.canvasRef.current.getContext('2d');
     ctx.fillStyle = 'white';
@@ -44,8 +65,8 @@ class SimpleGame extends Component {
   }
 
   drawWorm() {
-    let x = 50;
-    let y = 50;
+    let x = this.state.wormX;
+    let y = this.state.wormY;
     let dx = 2;
     let dy = 0;
     let start = 0;
@@ -54,7 +75,7 @@ class SimpleGame extends Component {
       x = x + dx;
       y = y + dy;
       this.drawWormPath(ctx, x, y);
-      if (start < 20) {
+      if (start < this.state.wormWidth) {
         start++;
         setTimeout(() => update(), 10);
       }
@@ -64,25 +85,25 @@ class SimpleGame extends Component {
 
   // dot
   drawWormPath = (ctx, x, y) => {
-    // ctx.clearRect(0, 0, 15, 15);
+    // ctx.clearRect(50, 50, 20, 10);
     ctx.beginPath();
     ctx.arc(x, y, 10, 0, Math.PI*2);
-    ctx.fillStyle = "#0095DD";
+    ctx.fillStyle = this.state.colors[this.state.wormColor];
     ctx.fill();
     ctx.closePath();
   }
 
-  // line
-  drawWormPath2 = (ctx, x, y) => {
-    ctx.lineWidth = 15;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#0095DD";
-    ctx.beginPath();
-    ctx.moveTo(20, 30);
-    ctx.lineTo(60, 30);
-    ctx.stroke();
-    ctx.closePath();
-  }
+  // // line
+  // drawWormPath2 = (ctx, x, y) => {
+  //   ctx.lineWidth = 15;
+  //   ctx.lineCap = "round";
+  //   ctx.strokeStyle = this.state.colors[this.state.wormColor];
+  //   ctx.beginPath();
+  //   ctx.moveTo(20, 30);
+  //   ctx.lineTo(60, 30);
+  //   ctx.stroke();
+  //   ctx.closePath();
+  // }
 
   drawGround() {
     let x = 50;
