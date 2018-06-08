@@ -11,10 +11,9 @@ import {
 export const Menu = () => (
   <Router>
     <div>
-      <div className="flex pad-30">
-        <Link className="margin-10-l" to="/">Home</Link>
-        <Link className="margin-10-l" to="/about">About</Link>
-        <Link className="margin-10-l" to="/game">Game</Link>
+      <div className="flex pad-30 fixed-nav">
+        <Link className="margin-10-l menu-link" to="/about">About</Link>
+        <Link className="margin-10-l menu-link" to="/game">Game</Link>
       </div>
       <Route path="/" />
       <Route path="/about" component={About}/>

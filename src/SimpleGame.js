@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { WormButtons } from './WormButtons';
 
 /*
   TODO
@@ -33,16 +34,13 @@ class SimpleGame extends Component {
     this.setState({
       ctx: this.canvasRef.current.getContext('2d'),
     }, this.initGame);
-    // this.initGame();
-    // this.drawWorm();
-    // this.drawGround();
     window.addEventListener('resize', this.resizeCanvas);
     window.addEventListener('keydown', this.keyDownHandler);
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.resizeCanvas);
-    window.addEventListener('keydown', this.keyDownHandler);
+    window.removeEventListener('keydown', this.keyDownHandler);
   }
 
   resizeCanvas = () => {
@@ -58,10 +56,8 @@ class SimpleGame extends Component {
           wormColor: (this.state.wormColor + 1) % this.state.colors.length,
         }, this.reDrawWorm)
     } else if (e.keyCode == 32 || e.keyCode == 13 || e.keyCode == 38 ) { // spacebar, enter, up arrow
-      console.log("jump worm!");
-      this.setState({
-        wormStartY: 10,
-      }, this.drawWorm);
+      e.preventDefault();
+      this.jumpHandler();
     }
   }
 
@@ -69,8 +65,7 @@ class SimpleGame extends Component {
     const { ctx } = this.state;
     ctx.fillStyle = 'white';
     ctx.fillRect(0,0, this.state.width, this.state.height);
-    this.drawWorm();
-    // this.drawGround();
+    this.drawWormPath();
     this.initGround();
   }
 
@@ -78,17 +73,12 @@ class SimpleGame extends Component {
   reDrawWorm() {
     const { ctx } = this.state;
     this.clearCanvas();
-    this.drawWormPath(ctx);
+    this.drawWormPath();
     this.drawGround();
   }
 
-  drawWorm() {
-    const { ctx } = this.state;
-    this.drawWormPath(ctx);
-  }
-
-  drawWormPath = (ctx) => {
-    const { wormStartX, wormStartY, wormEndX, wormEndY } = this.state;
+  drawWormPath = () => {
+    const { wormStartX, wormStartY, wormEndX, wormEndY, ctx } = this.state;
     ctx.lineWidth = this.state.wormHeight;
     ctx.lineCap = "round";
     ctx.strokeStyle = this.state.colors[this.state.wormColor];
@@ -150,9 +140,47 @@ class SimpleGame extends Component {
     }
   }
 
+  colorHandler = () => {
+    this.setState({
+      wormColor: (this.state.wormColor + 1) % this.state.colors.length,
+    }, this.reDrawWorm)
+  }
+
+  jumpHandler = () => {
+    const { wormStartY, wormEndY } = this.state;
+    let jumpTimer = 10;
+    this.setState({
+      wormStartY: wormStartY - jumpTimer,
+      wormEndY: wormEndY - jumpTimer,
+    }, this.reDrawWorm);
+    const update = () => {
+      jumpTimer--;
+      if (jumpTimer <= 0) {
+        this.setState({
+          wormStartY: wormStartY,
+          wormEndY: wormEndY,
+        }, this.reDrawWorm);
+      } else {
+        this.setState({
+          wormStartY: wormStartY - jumpTimer,
+          wormEndY: wormEndY - jumpTimer,
+        }, this.reDrawWorm);
+      }
+    }
+    let timer = 20;
+    while (timer > 0) {
+      timer--;
+      setTimeout(update, 1000);
+    }
+  }
+
   render() {
     return (
       <div className="pad-30">
+      <WormButtons
+        colorHandler={this.colorHandler}
+        jumpHandler={this.jumpHandler}
+      />
       <canvas
         ref={this.canvasRef}
         width={this.state.width}
@@ -162,6 +190,5 @@ class SimpleGame extends Component {
     );
   }
 }
-
 
 export default SimpleGame;

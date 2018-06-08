@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import {  Menu } from  './Menu';
+import { Menu } from  './Menu';
 
 
 class App extends Component {
@@ -31,7 +31,7 @@ class App extends Component {
           flex-justify-content-space-between`}
         >
           <h1 className="App-title">
-            {this.state.width > 415 ? 'sarah' :'s.e' }
+            {this.state.width > 415 ? 'sarah' :'s' }
           </h1>
         </header>
         <Menu />
