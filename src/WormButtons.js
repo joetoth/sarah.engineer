@@ -5,6 +5,9 @@ export const WormButtons = ({ colorHandler, jumpHandler }) => (
     <button className="button" onClick={colorHandler}>
       Color
     </button>
+    <button className="button" onClick={jumpHandler}>
+      Jump
+    </button>
   </div>
 )
 

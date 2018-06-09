@@ -28,6 +28,8 @@ class SimpleGame extends Component {
       wormHeight: 23,
       ctx: null,
       groundXY: [],
+      jumpHeight: 20,
+      isJumping: false,
     };
   }
 
@@ -141,38 +143,64 @@ class SimpleGame extends Component {
     }
   }
 
-  colorHandler = () => {
+  colorHandler = (e) => {
+    if (e) {
+      e.preventDefault();
+    }
     this.setState({
       wormColor: (this.state.wormColor + 1) % this.state.colors.length,
     }, this.reDrawWorm)
   }
 
-  jumpHandler = () => {
-    const { wormStartY, wormEndY } = this.state;
-    let jumpTimer = 10;
-    this.setState({
-      wormStartY: wormStartY - jumpTimer,
-      wormEndY: wormEndY - jumpTimer,
-    }, this.reDrawWorm);
-    const update = () => {
-      jumpTimer--;
-      if (jumpTimer <= 0) {
-        this.setState({
-          wormStartY: wormStartY,
-          wormEndY: wormEndY,
-        }, this.reDrawWorm);
-      } else {
-        this.setState({
-          wormStartY: wormStartY - jumpTimer,
-          wormEndY: wormEndY - jumpTimer,
-        }, this.reDrawWorm);
+  jumpUpdater = (originStartY, originEndY, jumpHeight) => {
+    const delta = 10;
+    const delay = 50;
+    let wormStart = originStartY;
+    let wormEnd = originEndY;
+    let goUp = true;
+
+    const update = (s, e) => {
+      this.setState({
+        wormStartY: s,
+        wormEndY: e,
+        isJumping: s === originStartY && e === originEndY ? false : true,
+      }, this.reDrawWorm);
+    }
+
+    setTimeout(function run() {
+      update(wormStart, wormEnd);
+      if (goUp) { // animate going up
+        wormStart -= delta;
+        wormEnd -= delta;
+        if (wormStart > jumpHeight || wormEnd > jumpHeight) {
+          setTimeout(run, delay);
+        } else {
+          goUp = false;
+          setTimeout(run, delay);
+        }
+      } else { // animate going down
+        wormStart += delta;
+        wormEnd += delta;
+        if (wormStart < originStartY || wormEnd < originStartY) {
+          setTimeout(run, delay);
+        } else {
+          update(originStartY, originEndY);
+        }
       }
+    }, delay);
+  }
+
+  jumpHandler = (e) => {
+    if (e) {
+      e.preventDefault();
     }
-    let timer = 20;
-    while (timer > 0) {
-      timer--;
-      setTimeout(update, 1000);
+    if (this.state.isJumping) {
+      return null; // don't jump while jumping
     }
+    const { wormStartY, wormEndY, jumpHeight } = this.state;
+    this.setState({
+      isJumping: true,
+    }, () => this.jumpUpdater(wormStartY, wormEndY,  jumpHeight));
   }
 
   render() {
