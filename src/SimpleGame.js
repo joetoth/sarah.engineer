@@ -18,6 +18,9 @@ class SimpleGame extends Component {
       diff: 50,
       width: window.innerWidth - 50,
       height: window.innerHeight - 50,
+      mapDistance: 500,
+      groundStartX: 50,
+      groundStartY: 62,
       wormColor: 0,
       colors: ['#0095DD', '#ff9966', '#ccccff', '#ffccff'],
       wormStartX: 60,
@@ -30,6 +33,8 @@ class SimpleGame extends Component {
       groundXY: [],
       jumpHeight: 20,
       isJumping: false,
+      dirt: [],
+      leafs: [],
     };
   }
 
@@ -57,7 +62,7 @@ class SimpleGame extends Component {
     if (e.keyCode == 67) { // letter 'c'
         this.setState({
           wormColor: (this.state.wormColor + 1) % this.state.colors.length,
-        }, this.reDrawWorm)
+        }, this.redrawScene)
     } else if (e.keyCode == 32 || e.keyCode == 13 || e.keyCode == 38 ) { // spacebar, enter, up arrow
       e.preventDefault();
       this.jumpHandler();
@@ -70,14 +75,90 @@ class SimpleGame extends Component {
     ctx.fillRect(0,0, this.state.width, this.state.height);
     this.drawWormPath();
     this.initGround();
+    this.getDirt();
+    this.getLeafs();
+  }
+
+  getDirt() {
+    const x = this.state.groundStartX;
+    const y = this.state.groundStartY;
+    let start = 0;
+    const dirt = [{ x, y }];
+    while (start < this.state.mapDistance) {
+      start++;
+      const randomNumber = Math.floor(Math.random() * 100);
+      if (randomNumber % 10 === 0) {  // adds dirt to ground
+        const randomDotDistance = Math.floor(Math.random() * 10);
+        dirt.push({ x: x+start, y: y+randomDotDistance });
+      } else {
+          dirt.push({ x: x+start, y });
+      }
+    }
+    this.setState({
+      dirt,
+    }, this.drawDirt);
+  }
+
+  drawDirt = () => {
+    const { dirt } = this.state;
+    dirt.forEach((d) => {
+      this.drawDirtPath(d.x, d.y);
+    })
+  }
+
+  drawDirtPath = (x, y) => {
+    const { ctx } = this.state;
+    ctx.beginPath();
+    ctx.arc(x, y, 1, 0, Math.PI*2);
+    ctx.fillStyle = "#000000";
+    ctx.fill();
+  }
+
+  getLeafs() {
+    const x = this.state.groundStartX;
+    const y = this.state.groundStartY;
+    let start = 0;
+    const leafs = [{ x, y }];
+    while (start < this.state.mapDistance) {
+      start++;
+      const randomNumber = Math.floor(Math.random() * 100);
+      if (randomNumber % 10 === 0) {
+        const randomHeight = Math.floor(Math.random() * 10);
+        leafs.push({ x: x+start, y: y-randomHeight });
+      } else {
+        leafs.push({ x: null, y: null });
+      }
+    }
+    this.setState({
+      leafs,
+    }, this.drawLeafs);
+  }
+
+  drawLeafs = () => {
+    const { leafs } = this.state;
+    leafs.forEach((d) => {
+      if (d.x && d.y) {
+        this.drawLeafsPath(d.x, d.y);
+      }
+    })
+  }
+
+  drawLeafsPath = (x, y) => {
+    const { ctx } = this.state;
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI*2);
+    ctx.fillStyle = "#2eb82e";
+    ctx.fill();
   }
 
   // deletes existing worm before re-drawing
-  reDrawWorm() {
+  redrawScene() {
     const { ctx } = this.state;
     this.clearCanvas();
     this.drawWormPath();
     this.drawGround();
+    this.drawDirt();
+    this.drawLeafs();
   }
 
   drawWormPath = () => {
@@ -98,13 +179,13 @@ class SimpleGame extends Component {
   }
 
   initGround() {
-    let x = 50;
-    let y = 62;
+    let x = this.state.groundStartX;
+    let y = this.state.groundStartY;
     const dx = 2;
     const dy = 0; // 0 = ground is flat
     const groundXY = [{x, y}];
     let start = 0;
-    while (start < this.state.width) {
+    while (start < this.state.mapDistance) {
       start++;
       x = x + dx;
       y = y + dy;
@@ -127,20 +208,6 @@ class SimpleGame extends Component {
     ctx.arc(x, y, 1, 0, Math.PI*2);
     ctx.fillStyle = "#000000";
     ctx.fill();
-    const randomNumber = Math.floor(Math.random() * 100);
-    if (randomNumber % 10 === 0) {  // adds dirt to ground
-      const randomDotDistance = Math.floor(Math.random() * 10);
-      ctx.beginPath();
-      ctx.arc(x, y+randomDotDistance, 1, 0, Math.PI*2);
-      ctx.fillStyle = "#000000";
-      ctx.fill();
-    } else if (randomNumber % 5 === 0) { // adds leafs on ground
-      const randomHeight = Math.floor(Math.random() * 10);
-      ctx.beginPath();
-      ctx.arc(x, y-randomHeight, 3, 0, Math.PI*2);
-      ctx.fillStyle = "#2eb82e";
-      ctx.fill();
-    }
   }
 
   colorHandler = (e) => {
@@ -149,7 +216,7 @@ class SimpleGame extends Component {
     }
     this.setState({
       wormColor: (this.state.wormColor + 1) % this.state.colors.length,
-    }, this.reDrawWorm)
+    }, this.redrawScene)
   }
 
   jumpUpdater = (originStartY, originEndY, jumpHeight) => {
@@ -164,7 +231,7 @@ class SimpleGame extends Component {
         wormStartY: s,
         wormEndY: e,
         isJumping: s === originStartY && e === originEndY ? false : true,
-      }, this.reDrawWorm);
+      }, this.redrawScene);
     }
 
     setTimeout(function run() {
