@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import './App.css';
 import { Menu } from  './Menu';
+import { Content } from  './Content';
+import { Footer } from './Footer';
 
 
 class App extends Component {
@@ -8,6 +11,7 @@ class App extends Component {
     super(props);
     this.state = {
       width: window.innerWidth,
+      mobileView: 500,
     };
   }
 
@@ -25,17 +29,23 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <header
-          className={`App-header flex flex-align-items-center
-          flex-justify-content-space-between`}
-        >
-          <h1 className="App-title">
-            {this.state.width > 415 ? 'sarah' :'s' }
-          </h1>
-        </header>
-        <Menu />
-      </div>
+      <BrowserRouter>
+        <div className="App">
+          <header
+            className={`${this.state.width > this.state.mobileView ?
+              'App-header' : 'App-header-sm'} flex flex-align-items-center
+            flex-justify-content-space-between`}
+          >
+            <h1 className={`${this.state.width > this.state.mobileView ?
+              'App-title' :'App-title-sm'} grand-hotel`}>
+              sarah.engineer
+            </h1>
+            <Menu />
+          </header>
+          <Content />
+          <Footer />
+        </div>
+      </BrowserRouter>
     );
   }
 }

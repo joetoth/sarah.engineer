@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { WormButtons } from './WormButtons';
+import { Construction } from './Construction';
 
 /*
   TODO
@@ -177,6 +178,7 @@ class SimpleGame extends Component {
   render() {
     return (
       <div className="pad-30">
+      <Construction />
       <WormButtons
         colorHandler={this.colorHandler}
         jumpHandler={this.jumpHandler}
