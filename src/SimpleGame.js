@@ -4,10 +4,7 @@ import { Construction } from './Construction';
 
 /*
   TODO
-  - make obstacles and ground move in unison
-  - add JUMP ability of drawWorm
   - scoring
-  - make worm "eat" leafs to gain health/points/speed?
 */
 
 class SimpleGame extends Component {
@@ -30,11 +27,13 @@ class SimpleGame extends Component {
       wormWidth: 50,
       wormHeight: 23,
       ctx: null,
-      groundXY: [],
       jumpHeight: 20,
       isJumping: false,
+      ground: [],
       dirt: [],
       leafs: [],
+      moveForward: false,
+      groundPosition: 0,
     };
   }
 
@@ -75,34 +74,49 @@ class SimpleGame extends Component {
     ctx.fillRect(0,0, this.state.width, this.state.height);
     this.drawWormPath();
     this.initGround();
-    this.getDirt();
-    this.getLeafs();
+    this.getItems('dirt', 10, this.drawDirtPath, false, false);
+    this.getItems('leafs', 10, this.drawLeafsPath, true, true);
   }
 
-  getDirt() {
+  getItems(name, modBy, drawPathFn, isNeg, nullPoint) {
     const x = this.state.groundStartX;
     const y = this.state.groundStartY;
-    let start = 0;
-    const dirt = [{ x, y }];
-    while (start < this.state.mapDistance) {
-      start++;
+    let xModifier = 0;
+    const items = [{ x, y }];
+    while (xModifier < this.state.mapDistance) {
+      xModifier++;
       const randomNumber = Math.floor(Math.random() * 100);
-      if (randomNumber % 10 === 0) {  // adds dirt to ground
-        const randomDotDistance = Math.floor(Math.random() * 10);
-        dirt.push({ x: x+start, y: y+randomDotDistance });
+      if (randomNumber % modBy === 0) {  // adds dirt to ground
+        const yModifier = Math.floor(Math.random() * 10);
+        items.push({
+          x: x+xModifier,
+          y: isNeg ? y-yModifier : y+yModifier
+        });
       } else {
-          dirt.push({ x: x+start, y });
+          items.push({
+            x: nullPoint ? null : x+xModifier,
+            y: nullPoint ? null : y
+          });
       }
     }
+    const drawItems = () => {
+      this.drawItems(name, drawPathFn);
+    }
     this.setState({
-      dirt,
-    }, this.drawDirt);
+      [name]: items,
+    }, drawItems);
   }
 
-  drawDirt = () => {
-    const { dirt } = this.state;
-    dirt.forEach((d) => {
-      this.drawDirtPath(d.x, d.y);
+  drawItems = (name, drawPathFn) => {
+    const { [name]: items, groundPosition } = this.state;
+    const mappedItems = items.map((item, index) => {
+        return {
+          x: item.x - groundPosition,
+          y: item.y,
+        };
+    });
+    mappedItems.forEach((p) => {
+      drawPathFn(p.x, p.y);
     })
   }
 
@@ -114,51 +128,21 @@ class SimpleGame extends Component {
     ctx.fill();
   }
 
-  getLeafs() {
-    const x = this.state.groundStartX;
-    const y = this.state.groundStartY;
-    let start = 0;
-    const leafs = [{ x, y }];
-    while (start < this.state.mapDistance) {
-      start++;
-      const randomNumber = Math.floor(Math.random() * 100);
-      if (randomNumber % 10 === 0) {
-        const randomHeight = Math.floor(Math.random() * 10);
-        leafs.push({ x: x+start, y: y-randomHeight });
-      } else {
-        leafs.push({ x: null, y: null });
-      }
-    }
-    this.setState({
-      leafs,
-    }, this.drawLeafs);
-  }
-
-  drawLeafs = () => {
-    const { leafs } = this.state;
-    leafs.forEach((d) => {
-      if (d.x && d.y) {
-        this.drawLeafsPath(d.x, d.y);
-      }
-    })
-  }
-
   drawLeafsPath = (x, y) => {
     const { ctx } = this.state;
     ctx.beginPath();
-    ctx.arc(x, y, 3, 0, Math.PI*2);
+    ctx.arc(x, y-4, 4, 0, Math.PI*2);
     ctx.fillStyle = "#2eb82e";
     ctx.fill();
   }
 
-  // deletes existing worm before re-drawing
   redrawScene() {
     const { ctx } = this.state;
     this.clearCanvas();
     this.drawWormPath();
     this.drawGround();
-    this.drawDirt();
-    this.drawLeafs();
+    this.drawItems('dirt', this.drawDirtPath);
+    this.drawItems('leafs',this.drawLeafsPath);
   }
 
   drawWormPath = () => {
@@ -183,26 +167,28 @@ class SimpleGame extends Component {
     let y = this.state.groundStartY;
     const dx = 2;
     const dy = 0; // 0 = ground is flat
-    const groundXY = [{x, y}];
+    const ground = [{x, y}];
     let start = 0;
     while (start < this.state.mapDistance) {
       start++;
       x = x + dx;
       y = y + dy;
-      groundXY.push({ x, y });
+      ground.push({ x, y });
     }
     this.setState({
-      groundXY
+      ground,
     }, this.drawGround);
   }
 
   drawGround() {
-    this.state.groundXY.forEach((groundPt) => {
-      this.drawGroundPath(groundPt.x, groundPt.y);
+    const { ground, groundPosition } = this.state;
+    const itemArray = ground.slice(groundPosition);
+    itemArray.forEach((p) => {
+      this.drawGroundPath(p.x, p.y);
     });
   }
 
-  drawGroundPath(x, y) {
+  drawGroundPath = (x, y) => {
     const { ctx } = this.state;
     ctx.beginPath();
     ctx.arc(x, y, 1, 0, Math.PI*2);
@@ -267,7 +253,22 @@ class SimpleGame extends Component {
     const { wormStartY, wormEndY, jumpHeight } = this.state;
     this.setState({
       isJumping: true,
-    }, () => this.jumpUpdater(wormStartY, wormEndY,  jumpHeight));
+      moveForward: true,
+    }, () => {
+      this.jumpUpdater(wormStartY, wormEndY,  jumpHeight);
+    });
+  }
+
+  moveForward = () => {
+    let timer = 0;
+    let max = 5;
+    while(timer < max) {
+      timer++;
+      const newVal = this.state.groundPosition + 1;
+      this.setState({
+        groundPosition: newVal,
+      }, this.redrawScene);
+    }
   }
 
   render() {
@@ -277,6 +278,7 @@ class SimpleGame extends Component {
       <WormButtons
         colorHandler={this.colorHandler}
         jumpHandler={this.jumpHandler}
+        moveHandler={this.moveForward}
       />
       <canvas
         ref={this.canvasRef}
