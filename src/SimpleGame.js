@@ -4,6 +4,8 @@ import { Construction } from './Construction';
 
 /*
   TODO
+  - ground moves continuously on first jump
+  - end when hits an obstacle
   - scoring
 */
 
@@ -19,7 +21,7 @@ class SimpleGame extends Component {
       groundStartX: 50,
       groundStartY: 62,
       wormColor: 0,
-      colors: ['#0095DD', '#ff9966', '#ccccff', '#ffccff'],
+      colors: ['#a5c7ff', '#ffe5aa', '#e3ffaf', '#ccccff', '#ffccff'],
       wormStartX: 60,
       wormStartY: 50,
       wormEndX: 110,
@@ -182,8 +184,13 @@ class SimpleGame extends Component {
 
   drawGround() {
     const { ground, groundPosition } = this.state;
-    const itemArray = ground.slice(groundPosition);
-    itemArray.forEach((p) => {
+    const mappedItems = ground.map((item, index) => {
+        return {
+          x: item.x - groundPosition,
+          y: item.y,
+        };
+    });
+    mappedItems.forEach((p) => {
       this.drawGroundPath(p.x, p.y);
     });
   }
@@ -260,15 +267,27 @@ class SimpleGame extends Component {
   }
 
   moveForward = () => {
-    let timer = 0;
-    let max = 5;
-    while(timer < max) {
-      timer++;
-      const newVal = this.state.groundPosition + 1;
+    // this.moveUpdater();
+    const newVal = this.state.groundPosition + 8;
+    this.setState({
+      groundPosition: newVal,
+    }, this.redrawScene);
+  }
+
+  moveUpdater = () => {
+    const { groundPosition } = this.state;
+    const delta = 8;
+    const delay = 50;
+    const run = () => {
+      const newGroundPosition = groundPosition + delta;
       this.setState({
-        groundPosition: newVal,
-      }, this.redrawScene);
-    }
+        groundPosition: newGroundPosition,
+      }, () => {
+        this.redrawScene();
+        setTimeout(run, delay);
+      });
+    };
+    setTimeout(run, delay);
   }
 
   render() {
