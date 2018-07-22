@@ -6,9 +6,12 @@ const About = () => (
     <h2>About Sarah</h2>
     <img src={sarah} className="App-logo img-round" alt="logo" />
     <div className="pad-30 max-width-300 text-align-left">
-      {`I'm a NYC-based software engineer with a knack for delivering great
-        user experiences, and a passion for automating everything.
-        In my spare time, I enjoy working on side projects. Otherwise, I'm improving my kill/death rate in
+      {`I'm a software engineer with a passion for delivering intuitive and
+        performant user interfaces. I built this site to play around with
+        in my (limited) free time - so it may be a collection of unfinished business.
+        I'm currently living in NYC with a very fluffy cat named Silkie.
+        When I'm not coding,
+        I'm improving my kill/death rate in
         Call of Duty or lounging in Central Park.`}
     </div>
     <h4>Connect with Me:</h4>
