@@ -21,6 +21,7 @@ class Square extends Component {
   }
 
   clickHandler = (event) => {
+    event.preventDefault();
     this.props.singleClick(event.target.id);
   }
 
