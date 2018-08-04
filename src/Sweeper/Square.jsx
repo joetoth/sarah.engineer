@@ -83,9 +83,16 @@ Square.propTypes = {
   doubleClick: PropTypes.func.isRequired,
   singleClick: PropTypes.func.isRequired,
   status: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
   id: PropTypes.string.isRequired,
-  flag: PropTypes.string.isRequired,
+  flag: PropTypes.bool,
+};
+
+Square.defaultProps = {
+  flag: false,
 };
 
 export default Square;
