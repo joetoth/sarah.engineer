@@ -76,9 +76,8 @@ export const getBombTouchCount = (squareValue, x, y) => {
   return neighbors.filter(key => squareValue[key] === BOMB).length;
 };
 
-export const initSquareValue = (squares) => {
+export const initSquareValue = (squares, bombLocations) => {
   const squareValue = {};
-  const bombLocations = getBombLocations(N);
   bombLocations.forEach((bombLocation) => {
     squareValue[bombLocation] = BOMB;
   });

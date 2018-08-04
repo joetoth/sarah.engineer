@@ -6,10 +6,10 @@ import {
 } from './utils';
 
 export class Square extends Component {
-  constructor(props) {
-    super(props);
-    this.handleDoubleClick = this.handleDoubleClick.bind(this);
-  }
+  // constructor(props) {
+  //   super(props);
+  //   // this.handleDoubleClick = this.handleDoubleClick.bind(this);
+  // }
 
   /*
     Clicks:
@@ -18,7 +18,8 @@ export class Square extends Component {
     double - reveal value
   */
 
-  handleDoubleClick(event) {
+  handleDoubleClick = (event) => {
+    // event.preventDefault();
     this.props.doubleClick(event.target.id);
   }
 

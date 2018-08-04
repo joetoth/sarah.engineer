@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { Square } from './Square';
+import { Winner } from './Winner';
 import {
   N,
   BOMB,
   boardMap,
+  getBombLocations,
   initSquareStatus,
   initSquareValue,
   ProgressChart,
@@ -17,13 +19,16 @@ class Board extends Component {
     const rows = N;
     const cols = N;
     const squares = boardMap(rows, cols);
+    const bombLocations = getBombLocations(N);
     this.state = {
       totalBombs: N,
       happy: true,
       squares,
       squareStatus: initSquareStatus(squares),
-      squareValue: initSquareValue(squares),
+      squareValue: initSquareValue(squares, bombLocations),
       squareFlagged: {},
+      bombLocations,
+      hasWon: false,
     };
   }
 
@@ -56,10 +61,18 @@ class Board extends Component {
   }
 
   revealSquares = (idObject) => {
+    const flagObject = {};
+    Object.keys(idObject).forEach((key) => {
+      flagObject[key] = false;
+    });
     this.setState({
       squareStatus: {
         ...this.state.squareStatus,
         ...idObject,
+      },
+      squareFlagged: {
+        ...this.state.squareFlagged,
+        ...flagObject,
       },
     });
   }
@@ -72,6 +85,10 @@ class Board extends Component {
         ...this.state.squareStatus,
         [id]: 'reveal',
       },
+      squareFlagged: {
+        ...this.state.squareFlagged,
+        [id]: false,
+      },
     });
   }
 
@@ -83,10 +100,24 @@ class Board extends Component {
         const seen = {};
         this.expandArea(id, true, seen);
         this.revealSquares(seen);
-        // this.revealSquareById(id);
       } else { // reveal a single square
         this.revealSquareById(id);
       }
+    }
+    this.checkForWin();
+  }
+
+  checkForWin = () => {
+    let count = 0;
+    this.state.bombLocations.forEach((location) => {
+      if (this.state.squareFlagged[location]) {
+        count += 1;
+      }
+    });
+    const revealedCount = Object.values(this.state.squareStatus)
+      .filter(value => value === 'reveal').length;
+    if (count === N && revealedCount === (N * N) - N) {
+      this.setState({ hasWon: true });
     }
   }
 
@@ -95,20 +126,23 @@ class Board extends Component {
     this.setState({
       squareFlagged: {
         ...this.state.squareFlagged,
-        [id]: !flag,
+        [id]: flag !== true,
       },
-    });
+    }, this.checkForWin);
   }
 
   doNothing = () => null
 
   resetGame = () => {
+    const bombLocations = getBombLocations(N);
     this.setState({
       totalBombs: N,
       happy: true,
       squareStatus: initSquareStatus(this.state.squares),
-      squareValue: initSquareValue(this.state.squares),
+      squareValue: initSquareValue(this.state.squares, bombLocations),
       squareFlagged: {},
+      bombLocations,
+      hasWon: false,
     });
   }
 
@@ -129,6 +163,7 @@ class Board extends Component {
     } = this.state;
     return (
       <div>
+        {this.state.hasWon ? <Winner /> : null}
         <ProgressChart
           happy={happy}
           bombsLeft={totalBombs - this.getFlagCount()}
