@@ -56,7 +56,7 @@ export const getValidKey = (n, X, Y) => {
 };
 
 export const getNeighbors = (n, x, y) => {
-  let neighbors = [];
+  const neighbors = [];
   neighbors.push(getValidKey(n, x - 1, y - 1));
   neighbors.push(getValidKey(n, x - 1, y));
   neighbors.push(getValidKey(n, x - 1, y + 1));
@@ -65,7 +65,7 @@ export const getNeighbors = (n, x, y) => {
   neighbors.push(getValidKey(n, x + 1, y - 1));
   neighbors.push(getValidKey(n, x + 1, y));
   neighbors.push(getValidKey(n, x + 1, y + 1));
-  neighbors = neighbors.filter(key => key);
+  // neighbors = neighbors.filter(key => key);
   return neighbors;
 };
 
@@ -85,33 +85,49 @@ export const initSquareValue = (squares) => {
   squares.forEach((key) => {
     if (!squareValue[key] || squareValue[key] !== BOMB) {
       const xy = parseKey(key);
-      const bombCount = getBombTouchCount(squareValue, xy[0], xy[1]);
-      squareValue[key] = bombCount;
+      squareValue[key] = getBombTouchCount(squareValue, xy[0], xy[1]);
     }
   });
   return squareValue;
 };
 
 // View for the smiley face
-export const FaceIcon = ({ happy }) => (
-  <div className={`${happy ? 'smile-icon' : 'frown-icon'}`}>
+export const FaceIcon = ({ happy, onClickFunction, onKeyUpFunction }) => (
+  <span
+    role="button"
+    tabIndex="0"
+    className={`${happy ? 'smile-icon' : 'frown-icon'}`}
+    onClick={onClickFunction}
+    onKeyUp={onKeyUpFunction}
+  >
     {happy ? '☺' : '☹'}
-  </div>
+  </span>
 );
 
 FaceIcon.propTypes = {
   happy: PropTypes.bool.isRequired,
+  onClickFunction: PropTypes.func.isRequired,
+  onKeyUpFunction: PropTypes.func.isRequired,
 };
 
 // View for game progress above board
-export const ProgressChart = ({ bombsLeft, happy }) => (
+export const ProgressChart = ({
+  bombsLeft, happy, resetGame, resetGameByKey,
+}) => (
   <div className="flex flex-align-items-center montserrat progress-chart">
     <div className="pad-10">{FLAG}{bombsLeft}</div>
-    <FaceIcon happy={happy} className="pad-10" />
+    <FaceIcon
+      className="pad-10"
+      happy={happy}
+      onClickFunction={resetGame}
+      onKeyUpFunction={resetGameByKey}
+    />
   </div>
 );
 
 ProgressChart.propTypes = {
   happy: PropTypes.bool.isRequired,
   bombsLeft: PropTypes.number.isRequired,
+  resetGame: PropTypes.func.isRequired,
+  resetGameByKey: PropTypes.func.isRequired,
 };

@@ -7,6 +7,8 @@ import {
   initSquareStatus,
   initSquareValue,
   ProgressChart,
+  parseKey,
+  getNeighbors,
 } from './utils';
 
 class Board extends Component {
@@ -28,13 +30,48 @@ class Board extends Component {
   getFlagCount = () => Object.keys(this.state.squareFlagged)
     .filter(key => this.state.squareFlagged[key]).length;
 
-  resetGame = () => {
+  getAdjacentIds = (id) => {
+    let [x, y] = parseKey(id);
+    x = parseInt(x, 10);
+    y = parseInt(y, 10);
+    return getNeighbors(N, x, y);
+  }
+
+  expandArea = (id, isInitial, seen) => {
+    const value = this.state.squareValue[id];
+    const status = this.state.squareStatus[id];
+    if (isInitial && value === BOMB) {
+      seen[id] = 'reveal'; // eslint-disable-line no-param-reassign
+      this.revealSquareById(id);
+    } else if (status === 'default') {
+      seen[id] = 'reveal'; // eslint-disable-line no-param-reassign
+      if (value === 0) {
+        this.getAdjacentIds(id).forEach((adjacentId) => {
+          if (!seen[adjacentId]) {
+            this.expandArea(adjacentId, false, seen);
+          }
+        });
+      }
+    }
+  }
+
+  revealSquares = (idObject) => {
     this.setState({
-      totalBombs: N,
-      happy: true,
-      squareStatus: initSquareStatus(this.state.squares),
-      squareValue: initSquareValue(this.state.squares),
-      squareFlagged: {},
+      squareStatus: {
+        ...this.state.squareStatus,
+        ...idObject,
+      },
+    });
+  }
+
+  revealSquareById = (id) => {
+    const value = this.state.squareValue[id];
+    this.setState({
+      happy: value !== BOMB,
+      squareStatus: {
+        ...this.state.squareStatus,
+        [id]: 'reveal',
+      },
     });
   }
 
@@ -42,13 +79,14 @@ class Board extends Component {
     const status = this.state.squareStatus[id];
     const value = this.state.squareValue[id];
     if (status === 'default') {
-      this.setState({
-        happy: value !== BOMB,
-        squareStatus: {
-          ...this.state.squareStatus,
-          [id]: 'reveal',
-        },
-      });
+      if (value === 0) { // expand area to non-zero
+        const seen = {};
+        this.expandArea(id, true, seen);
+        this.revealSquares(seen);
+        // this.revealSquareById(id);
+      } else { // reveal a single square
+        this.revealSquareById(id);
+      }
     }
   }
 
@@ -64,6 +102,22 @@ class Board extends Component {
 
   doNothing = () => null
 
+  resetGame = () => {
+    this.setState({
+      totalBombs: N,
+      happy: true,
+      squareStatus: initSquareStatus(this.state.squares),
+      squareValue: initSquareValue(this.state.squares),
+      squareFlagged: {},
+    });
+  }
+
+  resetGameByKey = (event) => {
+    if (event.keyCode !== 9 && event.keyCode !== 16) { // not tab or shift key
+      this.resetGame();
+    }
+  }
+
   render() {
     const {
       happy,
@@ -75,7 +129,12 @@ class Board extends Component {
     } = this.state;
     return (
       <div>
-        <ProgressChart happy={happy} bombsLeft={totalBombs - this.getFlagCount()} />
+        <ProgressChart
+          happy={happy}
+          bombsLeft={totalBombs - this.getFlagCount()}
+          resetGame={this.resetGame}
+          resetGameByKey={this.resetGameByKey}
+        />
         <div className="flex board">
           { squares.map(square => (
             <Square
