@@ -34,6 +34,7 @@ class Board extends Component {
       happy: true,
       squareStatus: initSquareStatus(this.state.squares),
       squareValue: initSquareValue(this.state.squares),
+      squareFlagged: {},
     });
   }
 
