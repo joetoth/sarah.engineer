@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   BOMB,
   FLAG,
@@ -7,7 +8,7 @@ import {
 export class Square extends Component {
   constructor(props) {
     super(props);
-    this.handleDoubleClick = this._handleDoubleClick.bind(this);
+    this.handleDoubleClick = this.handleDoubleClick.bind(this);
   }
 
   /*
@@ -17,43 +18,74 @@ export class Square extends Component {
     double - reveal value
   */
 
-  _handleDoubleClick(event) {
+  handleDoubleClick(event) {
     this.props.doubleClick(event.target.id);
   }
 
-  clickHandler = (event) => {
+  handleClick = (event) => {
     event.preventDefault();
     this.props.singleClick(event.target.id);
   }
 
+  handleKeyUp = (event) => {
+    switch (event.keyCode) {
+      case 32: { // spacebar
+        this.props.singleClick(event.target.id);
+        break;
+      }
+      case 13: { // enter
+        this.props.doubleClick(event.target.id);
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
   render() {
-    const { status, value, id, flag } = this.props;
-    if (status === "default") {
+    const {
+      status, value, id, flag,
+    } = this.props;
+    if (status === 'default') {
       return (
         <div
+          role="button"
+          tabIndex="0"
           className="square blue"
-          onClick={this.clickHandler}
+          onClick={this.handleClick}
           onDoubleClick={this.handleDoubleClick}
+          onKeyUp={this.handleKeyUp}
           id={id}
         >
           {flag ? FLAG : null}
         </div>
       );
-    } else {
-      return (
-        <div
-          className={`flex flex-align-items-center
+    }
+    return (
+      <div
+        className={`flex flex-align-items-center
             flex-justify-content-center square blue
             ${value !== BOMB ? 'dimmed' : ''}`}
-          onClick={this.clickHandler}
-          onDoubleClick={this.handleDoubleClick}
-          id={id}
-        >
-          {value !== 0 ? value : null}
-        </div>
-      );
-    }
+        role="button"
+        tabIndex="0"
+        onClick={this.handleClick}
+        onDoubleClick={this.handleDoubleClick}
+        id={id}
+        onKeyUp={this.handleKeyUp}
+      >
+        {value !== 0 ? value : null}
+      </div>
+    );
   }
 }
+
+Square.propTypes = {
+  doubleClick: PropTypes.func.isRequired,
+  singleClick: PropTypes.func.isRequired,
+  status: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  flag: PropTypes.string.isRequired,
+};
 
 export default Square;
