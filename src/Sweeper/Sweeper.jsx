@@ -10,7 +10,6 @@ class Sweeper extends Component {
       </div>
     );
   }
-
 }
 
 export default Sweeper;

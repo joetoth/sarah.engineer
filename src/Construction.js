@@ -1,12 +1,12 @@
 import React from 'react';
 
 export const Construction = () => (
-  <div>
+    <div>
     🚧
-    <div className="grand-hotel">
+        <div className="grand-hotel">
       Pardon, this page is under construction.
-    </div>
+        </div>
     🚧
-  </div>
-)
+    </div>
+);
 export default Construction;
