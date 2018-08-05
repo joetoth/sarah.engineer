@@ -28,7 +28,17 @@ class Board extends Component {
       squareValue: initSquareValue(squares, bombLocations),
       squareFlagged: {},
       hasWon: false,
+      iOS: false,
+      flagMode: false,
     };
+  }
+
+  componentDidMount() {
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (iOS) {
+      console.log('its iOS!');
+      this.setState({ iOS: true, flagMode: false });
+    }
   }
 
   getFlagCount = () => Object.keys(this.state.squareFlagged)
@@ -166,6 +176,12 @@ class Board extends Component {
           resetGame={this.resetGame}
           resetGameByKey={this.resetGameByKey}
         />
+        {this.state.iOS ? (
+          <div>
+            iOS Mode
+            FlagMode: { this.state.flagMode }
+          </div>
+        ) : null}
         <div className="flex board">
           { squares.map(square => (
             <Square
