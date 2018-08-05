@@ -230,3 +230,118 @@
 .dimmed {
   opacity: .33;
 }
+
+/* Confetti Animation */
+.confetti-particle {
+  width: 10px;
+  height: 10px;
+  border-radius: 15px;
+  position: absolute;
+  top: -1%;
+}
+
+.confetti-particle-0 {
+  animation-duration: 8s;
+  animation-name: confetti-0;
+  animation-iteration-count: 1;
+}
+
+.confetti-particle-1 {
+  animation-duration: 14s;
+  animation-name: confetti-1;
+  animation-iteration-count: 1;
+}
+
+.confetti-particle-2 {
+  animation-duration: 9s;
+  animation-name: confetti-2;
+  animation-iteration-count: 1;
+}
+
+.confetti-particle-3 {
+  animation-duration: 10s;
+  animation-name: confetti-0;
+  animation-iteration-count: 1;
+}
+
+.confetti-particle-4 {
+  animation-duration: 12s;
+  animation-name: confetti-1;
+  animation-iteration-count: 1;
+}
+
+.confetti-particle-5 {
+  animation-duration: 13s;
+  animation-name: confetti-2;
+  animation-iteration-count: 1;
+}
+
+.confetti-particle-blue {
+  background-color: rgb(31, 148, 245);
+}
+
+.confetti-particle-purple {
+  background-color: rgb(86, 38, 164);
+}
+
+.confetti-particle-red {
+  background-color: rgb(175, 18, 65);
+}
+
+.confetti-particle-green {
+  background-color: rgb(9, 198, 62);
+}
+
+.confetti-particle-yellow {
+  background-color: rgb(255, 254, 107);
+}
+
+.twinkle {
+  animation-duration: 1s;
+  animation-name: twinkle;
+  animation-iteration-count: infinite;
+}
+
+@keyframes confetti-0 {
+  from {
+    top: -5%;
+  }
+
+  to {
+    top: 105%;
+  }
+}
+
+@keyframes confetti-1 {
+  from {
+    top: -5%;
+  }
+
+  to {
+    top: 105%;
+  }
+}
+
+@keyframes confetti-2 {
+  from {
+    top: -5%;
+  }
+
+  to {
+    top: 105%;
+  }
+}
+
+@keyframes twinkle {
+  from {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.50;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
