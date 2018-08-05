@@ -227,6 +227,10 @@
   color: salmon;
 }
 
+.face-winner {
+  color: rgb(255, 46, 134);
+}
+
 .dimmed {
   opacity: .33;
 }
@@ -237,7 +241,7 @@
   height: 10px;
   border-radius: 15px;
   position: absolute;
-  top: -1%;
+  top: -5%;
 }
 
 .confetti-particle-0 {

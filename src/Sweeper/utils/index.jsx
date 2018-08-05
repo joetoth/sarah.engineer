@@ -91,11 +91,13 @@ export const initSquareValue = (squares, bombLocations) => {
 };
 
 // View for the smiley face
-export const FaceIcon = ({ happy, onClickFunction, onKeyUpFunction }) => (
+export const FaceIcon = ({
+  happy, onClickFunction, onKeyUpFunction, hasWon,
+}) => (
   <span
     role="button"
     tabIndex="0"
-    className={`${happy ? 'smile-icon' : 'frown-icon'}`}
+    className={`${happy ? 'smile-icon' : 'frown-icon'} ${hasWon ? 'face-winner' : ''}`}
     onClick={onClickFunction}
     onKeyUp={onKeyUpFunction}
   >
@@ -107,11 +109,12 @@ FaceIcon.propTypes = {
   happy: PropTypes.bool.isRequired,
   onClickFunction: PropTypes.func.isRequired,
   onKeyUpFunction: PropTypes.func.isRequired,
+  hasWon: PropTypes.bool.isRequired,
 };
 
 // View for game progress above board
 export const ProgressChart = ({
-  bombsLeft, happy, resetGame, resetGameByKey,
+  bombsLeft, happy, resetGame, resetGameByKey, hasWon,
 }) => (
   <div className="flex flex-align-items-center montserrat progress-chart">
     <div className="pad-10">{FLAG}{bombsLeft}</div>
@@ -120,6 +123,7 @@ export const ProgressChart = ({
       happy={happy}
       onClickFunction={resetGame}
       onKeyUpFunction={resetGameByKey}
+      hasWon={hasWon}
     />
   </div>
 );
@@ -129,4 +133,5 @@ ProgressChart.propTypes = {
   bombsLeft: PropTypes.number.isRequired,
   resetGame: PropTypes.func.isRequired,
   resetGameByKey: PropTypes.func.isRequired,
+  hasWon: PropTypes.bool.isRequired,
 };

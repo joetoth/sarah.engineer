@@ -19,7 +19,7 @@ export class Square extends Component {
   */
 
   handleDoubleClick = (event) => {
-    // event.preventDefault();
+    event.preventDefault();
     this.props.doubleClick(event.target.id);
   }
 

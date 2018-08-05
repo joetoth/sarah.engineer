@@ -27,7 +27,6 @@ class Board extends Component {
       squareStatus: initSquareStatus(squares),
       squareValue: initSquareValue(squares, bombLocations),
       squareFlagged: {},
-      bombLocations,
       hasWon: false,
     };
   }
@@ -74,7 +73,7 @@ class Board extends Component {
         ...this.state.squareFlagged,
         ...flagObject,
       },
-    });
+    }, this.checkForWin);
   }
 
   revealSquareById = (id) => {
@@ -89,7 +88,7 @@ class Board extends Component {
         ...this.state.squareFlagged,
         [id]: false,
       },
-    });
+    }, this.checkForWin);
   }
 
   revealSquare = (id) => {
@@ -104,31 +103,28 @@ class Board extends Component {
         this.revealSquareById(id);
       }
     }
-    this.checkForWin();
+    // this.checkForWin();
   }
 
   checkForWin = () => {
-    let count = 0;
-    this.state.bombLocations.forEach((location) => {
-      if (this.state.squareFlagged[location]) {
-        count += 1;
-      }
-    });
     const revealedCount = Object.values(this.state.squareStatus)
       .filter(value => value === 'reveal').length;
-    if (count === N && revealedCount === (N * N) - N) {
+    if (revealedCount === (N * N) - N) {
       this.setState({ hasWon: true });
     }
   }
 
   updateFlagsPlaced = (id) => {
     const flag = this.state.squareFlagged[id];
-    this.setState({
-      squareFlagged: {
-        ...this.state.squareFlagged,
-        [id]: flag !== true,
-      },
-    }, this.checkForWin);
+    const status = this.state.squareStatus[id];
+    if (status !== 'reveal') {
+      this.setState({
+        squareFlagged: {
+          ...this.state.squareFlagged,
+          [id]: flag !== true,
+        },
+      });
+    }
   }
 
   doNothing = () => null
@@ -141,7 +137,6 @@ class Board extends Component {
       squareStatus: initSquareStatus(this.state.squares),
       squareValue: initSquareValue(this.state.squares, bombLocations),
       squareFlagged: {},
-      bombLocations,
       hasWon: false,
     });
   }
@@ -166,6 +161,7 @@ class Board extends Component {
         {this.state.hasWon ? <Winner /> : null}
         <ProgressChart
           happy={happy}
+          hasWon={this.state.hasWon}
           bombsLeft={totalBombs - this.getFlagCount()}
           resetGame={this.resetGame}
           resetGameByKey={this.resetGameByKey}
@@ -183,7 +179,7 @@ class Board extends Component {
             />
           ))}
         </div>
-        { !this.state.happy ? (
+        { !this.state.happy || this.state.hasWon ? (
           <button onClick={this.resetGame}>
               New Game
           </button>) : null

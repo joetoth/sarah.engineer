@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+/* eslint-disable react/no-array-index-key */
 
 const getRandomInteger = n => (Math.floor((Math.random() * n)));
 const COLORS = ['blue', 'purple', 'red', 'green', 'yellow'];
@@ -25,8 +26,8 @@ export const ConfettiParticle = ({ color, offset, type }) => (
 
 ConfettiParticle.propTypes = {
   color: PropTypes.string.isRequired,
-  offset: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
+  offset: PropTypes.number.isRequired,
+  type: PropTypes.number.isRequired,
 };
 
 export function Winner() {
@@ -35,9 +36,9 @@ export function Winner() {
   return (
     <div className="pad-10">
       <div className="grand-hotel">Winner!</div>
-      {colors.map(colorObj => (
+      {colors.map((colorObj, i) => (
         <ConfettiParticle
-          key={`${colorObj.color}+${colorObj.offset}+${colorObj.type}`}
+          key={`${colorObj.color}+${colorObj.offset}+${colorObj.type}+${i}`}
           color={colorObj.color}
           offset={colorObj.offset}
           type={colorObj.type}
