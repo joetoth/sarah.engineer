@@ -306,6 +306,20 @@
   animation-iteration-count: infinite;
 }
 
+/* Feedback widget */
+.feedback-widget {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 30;
+  background-color: #ff9697;
+  color: black;
+  border-radius: 100px;
+  width: 100px;
+  margin: 25px;
+  padding: 25px;
+}
+
 @keyframes confetti-0 {
   from {
     top: -5%;
