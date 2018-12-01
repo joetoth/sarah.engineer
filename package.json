@@ -17,9 +17,5 @@
     "posttest": "npm run lint",
     "eject": "react-scripts eject",
     "lint": "eslint . --fix"
-  },
-  "devDependencies": {
-    "eslint": "^5.2.0",
-    "eslint-config-amex": "^7.1.1"
   }
 }
